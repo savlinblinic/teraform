@@ -1,0 +1,38 @@
+name: Terraform Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.3.0
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: Terraform Init
+      run: terraform init -backend-config="bucket=terraform-state-bucket" -backend-config="key=terraform.tfstate" -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      env:
+        TF_VAR_bucket_name: "skrobakkyblik"
+        TF_VAR_ami_id: "ami-00cf59bc9978eb266"
+        TF_VAR_instance_type: "t2.micro"
+        TF_VAR_key_name: "ec2skrobak"
