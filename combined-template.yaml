@@ -8,7 +8,7 @@ Resources:
     Type: 'AWS::EC2::Instance'
     Properties:
       InstanceType: t2.micro
-      ImageId: ami-0233214e13e500f77  # AMI ID se může lišit v závislosti na regionu
+      ImageId: ami-00cf59bc9978eb266
       KeyName: !Ref KeyPairName
 Parameters:
   KeyPairName:
